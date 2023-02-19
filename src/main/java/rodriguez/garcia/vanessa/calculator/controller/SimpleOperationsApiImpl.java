@@ -28,7 +28,7 @@ public class SimpleOperationsApiImpl implements SimpleOperationsApi {
 			@Valid final CalculateRequestDto calculateRequestDto) {
 
 		if(!OPERATION_ADD.equals(operationCode) && !OPERATION_DIFF.equals(operationCode)) {
-			throw new IllegalArgumentException(operationCode);
+			throw new UnsupportedOperationException(operationCode);
 		}
 	
 		BigDecimal result = null;

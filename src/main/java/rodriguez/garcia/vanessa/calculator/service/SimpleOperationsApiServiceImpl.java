@@ -12,7 +12,7 @@ public class SimpleOperationsApiServiceImpl implements SimpleOperationsApiServic
 	@Override
 	public BigDecimal add(List<BigDecimal> operators) {
 		if (CollectionUtils.isEmpty(operators) || operators.size() == 1) {
-			throw new IllegalArgumentException("The minimum number of operators required to perform the operation is 2");
+			throw new IllegalArgumentException();
 		}
 		
 		final BigDecimal result = operators.stream().reduce(BigDecimal::add).get();
@@ -23,7 +23,7 @@ public class SimpleOperationsApiServiceImpl implements SimpleOperationsApiServic
 	@Override
 	public BigDecimal diff(List<BigDecimal> operators) {
 		if (CollectionUtils.isEmpty(operators) || operators.size() == 1) {
-			throw new IllegalArgumentException("The minimum number of operators required to perform the operation is 2");
+			throw new IllegalArgumentException();
 		}
 		
 		final BigDecimal result = operators.stream().reduce((num1, num2) -> num1.subtract(num2)).get();

@@ -241,13 +241,13 @@ class SimpleOperationsApiTest {
 	}
 
 	@Test
-	void calculateThrowsIllegalArgumentExceptionTest() throws Exception {
+	void calculateThrowsUnsupportedOperationExceptionTest() throws Exception {
 		final BigDecimal operator1 = new BigDecimal(1);
 		final BigDecimal operator2 = new BigDecimal(2);
 		final List<BigDecimal> operators = List.of(operator1, operator2);
 		final CalculateRequestDto requestDto = new CalculateRequestDto().operators(operators);
 		final BigDecimal expectedResult = new BigDecimal(3);
-		final ErrorDto expectedResponse = new ErrorDto().code(400).message("Operation divide not allowed");
+		final ErrorDto expectedResponse = new ErrorDto().code(100).message("Operation not supported");
 
 		Mockito.when(service.add(operators)).thenReturn(expectedResult);
 
