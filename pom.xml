@@ -57,6 +57,15 @@
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
+
+        <!-- Tracer API -->
+		<dependency>
+			<groupId>io.corp</groupId>
+			<artifactId>calculator</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/external-libs/tracer-1.0.0.jar</systemPath>
+		</dependency>
 	</dependencies>
 
 	<build>
