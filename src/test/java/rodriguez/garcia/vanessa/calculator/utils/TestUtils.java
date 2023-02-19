@@ -23,4 +23,16 @@ public class TestUtils {
 		
 		return objectMapper.readValue(result.getResponse().getContentAsString(), classToConvertTo);
 	}
+	
+	public static <T> T performCallAndObtainBadRequestResponse(final MockMvc mvc, final MockHttpServletRequestBuilder mockRequest,
+			final Class<T> classToConvertTo) throws Exception {
+		final ObjectMapper objectMapper = new ObjectMapper();
+		
+		final MvcResult result = mvc.perform(mockRequest)
+				.andExpect(status().isBadRequest())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andReturn();
+		
+		return objectMapper.readValue(result.getResponse().getContentAsString(), classToConvertTo);
+	}
 }
