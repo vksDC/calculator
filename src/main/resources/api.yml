@@ -1,0 +1,78 @@
+openapi: "3.0.0"
+info:
+  title: Calculator API
+  description: API definition for Calculator Microservice.
+  version: 0.1.0
+paths:
+  /operations/{operationCode}:
+    post:
+      summary: Performs the indicated operation in the parameters and returns the result
+      operationId: calculate
+      tags:
+        - simple-operations
+      parameters:
+        - name: operationCode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [add, diff]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                operators:
+                  type: array
+                  items:
+                    type: number
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+        '400':
+          description: The operation cannot be performed due to a input error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: The operation cannot be performed due to a server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    OperationResult:
+      type: object
+      required:
+        - id
+        - code
+      properties:
+        id:
+          type: integer
+          format: int64
+        code:
+          type: string
+        operators:
+          type: array
+          items:
+            type: number
+        result:
+          type: number
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
