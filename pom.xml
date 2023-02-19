@@ -80,16 +80,17 @@
 								${project.basedir}/src/main/resources/api.yml
 							</inputSpec>
 							<generatorName>spring</generatorName>
+							<modelNameSuffix>Dto</modelNameSuffix>
 							<supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
 							<apiPackage>com.test.generated.api.controller</apiPackage>
-							<modelPackage>com.test.generated.api.model</modelPackage>
+							<modelPackage>com.test.generated.api.dto</modelPackage>
 							<typeMappings>
 								<typeMapping>OffsetDateTime=java.time.LocalDateTime</typeMapping>
 							</typeMappings>
 							<configOptions>
 								<library>spring-boot</library>
 								<title>${project.artifactId}</title>
-								<delegatePattern>true</delegatePattern>
+								<interfaceOnly>true</interfaceOnly>
 								<serializableModel>true</serializableModel>
 								<openApiNullable>false</openApiNullable>
 								<async>false</async>
