@@ -1,7 +1,11 @@
 package rodriguez.garcia.vanessa.calculator.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.math.BigDecimal;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -21,6 +26,7 @@ import com.test.generated.api.dto.CalculateRequestDto;
 import com.test.generated.api.dto.ErrorDto;
 import com.test.generated.api.dto.OperationResultDto;
 
+import rodriguez.garcia.vanessa.calculator.exception.OperationNotSupportedException;
 import rodriguez.garcia.vanessa.calculator.service.SimpleOperationsApiService;
 import rodriguez.garcia.vanessa.calculator.utils.TestUtils;
 
@@ -34,7 +40,7 @@ class SimpleOperationsApiTest {
 
 	private static final String OPERATION_ADD = "add";
 
-	private static final String OPERATION_DIFF = "diff";
+	private static final String OPERATION_SUBTRACT = "subtract";
 
 	@MockBean
 	private SimpleOperationsApiService service;
@@ -43,7 +49,7 @@ class SimpleOperationsApiTest {
 	private MockMvc mvc;
 
 	@Test
-	void calculateAddSuccessfullyTest() throws Exception {
+	void addSuccessfully() throws Exception {
 		final BigDecimal operator1 = new BigDecimal(1);
 		final BigDecimal operator2 = new BigDecimal(2);
 		final List<BigDecimal> operators = List.of(operator1, operator2);
@@ -52,7 +58,7 @@ class SimpleOperationsApiTest {
 		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_ADD).operators(operators)
 				.result(expectedResult);
 
-		Mockito.when(service.add(operators)).thenReturn(expectedResult);
+		Mockito.when(service.calculate(OPERATION_ADD, operators)).thenReturn(expectedResult);
 
 		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_ADD)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding(ENCODING)
@@ -65,7 +71,7 @@ class SimpleOperationsApiTest {
 	}
 
 	@Test
-	void calculateAddResultZeroTest() throws Exception {
+	void addSuccessfully_resultZero() throws Exception {
 		final BigDecimal operator1 = new BigDecimal(1);
 		final BigDecimal operator2 = new BigDecimal(-1);
 		final List<BigDecimal> operators = List.of(operator1, operator2);
@@ -74,7 +80,7 @@ class SimpleOperationsApiTest {
 		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_ADD).operators(operators)
 				.result(expectedResult);
 
-		Mockito.when(service.add(operators)).thenReturn(expectedResult);
+		Mockito.when(service.calculate(OPERATION_ADD, operators)).thenReturn(expectedResult);
 
 		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_ADD)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding(ENCODING)
@@ -87,7 +93,7 @@ class SimpleOperationsApiTest {
 	}
 
 	@Test
-	void calculateAddWhenOneOperatorIsZeroTest() throws Exception {
+	void addSuccessfully_whenOneOperatorIsZero() throws Exception {
 		final BigDecimal operator1 = new BigDecimal(1);
 		final BigDecimal operator2 = new BigDecimal(0);
 		final List<BigDecimal> operators = List.of(operator1, operator2);
@@ -96,7 +102,7 @@ class SimpleOperationsApiTest {
 		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_ADD).operators(operators)
 				.result(expectedResult);
 
-		Mockito.when(service.add(operators)).thenReturn(expectedResult);
+		Mockito.when(service.calculate(OPERATION_ADD, operators)).thenReturn(expectedResult);
 
 		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_ADD)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding(ENCODING)
@@ -109,7 +115,7 @@ class SimpleOperationsApiTest {
 	}
 
 	@Test
-	void calculateAddWhenOneOperatorIsNegativeTest() throws Exception {
+	void addSuccessfully_whenOneOperatorIsNegative() throws Exception {
 		final BigDecimal operator1 = new BigDecimal(1);
 		final BigDecimal operator2 = new BigDecimal(-2);
 		final List<BigDecimal> operators = List.of(operator1, operator2);
@@ -118,7 +124,7 @@ class SimpleOperationsApiTest {
 		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_ADD).operators(operators)
 				.result(expectedResult);
 
-		Mockito.when(service.add(operators)).thenReturn(expectedResult);
+		Mockito.when(service.calculate(OPERATION_ADD, operators)).thenReturn(expectedResult);
 
 		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_ADD)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding(ENCODING)
@@ -131,7 +137,7 @@ class SimpleOperationsApiTest {
 	}
 
 	@Test
-	void calculateAddWhenBothOperatorsAreNegativeTest() throws Exception {
+	void addSuccessfully_whenBothOperatorsAreNegative() throws Exception {
 		final BigDecimal operator1 = new BigDecimal(-1);
 		final BigDecimal operator2 = new BigDecimal(-2);
 		final List<BigDecimal> operators = List.of(operator1, operator2);
@@ -140,7 +146,7 @@ class SimpleOperationsApiTest {
 		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_ADD).operators(operators)
 				.result(expectedResult);
 
-		Mockito.when(service.add(operators)).thenReturn(expectedResult);
+		Mockito.when(service.calculate(OPERATION_ADD, operators)).thenReturn(expectedResult);
 
 		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_ADD)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding(ENCODING)
@@ -153,18 +159,18 @@ class SimpleOperationsApiTest {
 	}
 
 	@Test
-	void calculateDiffSuccessfullyTest() throws Exception {
+	void subtractSuccessfully() throws Exception {
 		final BigDecimal operator1 = new BigDecimal(2);
 		final BigDecimal operator2 = new BigDecimal(1);
 		final List<BigDecimal> operators = List.of(operator1, operator2);
 		final CalculateRequestDto requestDto = new CalculateRequestDto().operators(operators);
 		final BigDecimal expectedResult = new BigDecimal(1);
-		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_DIFF).operators(operators)
+		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_SUBTRACT).operators(operators)
 				.result(expectedResult);
 
-		Mockito.when(service.diff(operators)).thenReturn(expectedResult);
+		Mockito.when(service.calculate(OPERATION_SUBTRACT, operators)).thenReturn(expectedResult);
 
-		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_DIFF)
+		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_SUBTRACT)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding(ENCODING)
 				.content(new ObjectMapper().writeValueAsString(requestDto));
 
@@ -175,18 +181,18 @@ class SimpleOperationsApiTest {
 	}
 
 	@Test
-	void calculateDiffResultZeroTest() throws Exception {
+	void subtractSuccessfully_resultZero() throws Exception {
 		final BigDecimal operator1 = new BigDecimal(2);
 		final BigDecimal operator2 = new BigDecimal(2);
 		final List<BigDecimal> operators = List.of(operator1, operator2);
 		final CalculateRequestDto requestDto = new CalculateRequestDto().operators(operators);
 		final BigDecimal expectedResult = new BigDecimal(0);
-		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_DIFF).operators(operators)
+		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_SUBTRACT).operators(operators)
 				.result(expectedResult);
 
-		Mockito.when(service.diff(operators)).thenReturn(expectedResult);
+		Mockito.when(service.calculate(OPERATION_SUBTRACT, operators)).thenReturn(expectedResult);
 
-		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_DIFF)
+		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_SUBTRACT)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding(ENCODING)
 				.content(new ObjectMapper().writeValueAsString(requestDto));
 
@@ -197,18 +203,18 @@ class SimpleOperationsApiTest {
 	}
 
 	@Test
-	void calculateDiffOneOperatorIsNegativeTest() throws Exception {
+	void subtractSuccessfully_whenOneOperatorIsNegative() throws Exception {
 		final BigDecimal operator1 = new BigDecimal(-1);
 		final BigDecimal operator2 = new BigDecimal(2);
 		final List<BigDecimal> operators = List.of(operator1, operator2);
 		final CalculateRequestDto requestDto = new CalculateRequestDto().operators(operators);
 		final BigDecimal expectedResult = new BigDecimal(-3);
-		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_DIFF).operators(operators)
+		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_SUBTRACT).operators(operators)
 				.result(expectedResult);
 
-		Mockito.when(service.diff(operators)).thenReturn(expectedResult);
+		Mockito.when(service.calculate(OPERATION_SUBTRACT, operators)).thenReturn(expectedResult);
 
-		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_DIFF)
+		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_SUBTRACT)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding(ENCODING)
 				.content(new ObjectMapper().writeValueAsString(requestDto));
 
@@ -219,18 +225,18 @@ class SimpleOperationsApiTest {
 	}
 
 	@Test
-	void calculateDiffBothOperatorsAreNegativeTest() throws Exception {
+	void subtractSuccessfully_whenBothOperatorsAreNegative() throws Exception {
 		final BigDecimal operator1 = new BigDecimal(-1);
 		final BigDecimal operator2 = new BigDecimal(-2);
 		final List<BigDecimal> operators = List.of(operator1, operator2);
 		final CalculateRequestDto requestDto = new CalculateRequestDto().operators(operators);
 		final BigDecimal expectedResult = new BigDecimal(1);
-		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_DIFF).operators(operators)
+		final OperationResultDto expectedResponse = new OperationResultDto().code(OPERATION_SUBTRACT).operators(operators)
 				.result(expectedResult);
 
-		Mockito.when(service.diff(operators)).thenReturn(expectedResult);
+		Mockito.when(service.calculate(OPERATION_SUBTRACT, operators)).thenReturn(expectedResult);
 
-		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_DIFF)
+		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_SUBTRACT)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding(ENCODING)
 				.content(new ObjectMapper().writeValueAsString(requestDto));
 
@@ -241,15 +247,14 @@ class SimpleOperationsApiTest {
 	}
 
 	@Test
-	void calculateThrowsUnsupportedOperationExceptionTest() throws Exception {
+	void calculate_throwsOperationNotSupportedException() throws Exception {
 		final BigDecimal operator1 = new BigDecimal(1);
 		final BigDecimal operator2 = new BigDecimal(2);
 		final List<BigDecimal> operators = List.of(operator1, operator2);
 		final CalculateRequestDto requestDto = new CalculateRequestDto().operators(operators);
-		final BigDecimal expectedResult = new BigDecimal(3);
 		final ErrorDto expectedResponse = new ErrorDto().code(100).message("Operation not supported");
 
-		Mockito.when(service.add(operators)).thenReturn(expectedResult);
+		Mockito.when(service.calculate("divide", operators)).thenThrow(OperationNotSupportedException.class);
 
 		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, "divide")
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding(ENCODING)
@@ -259,5 +264,18 @@ class SimpleOperationsApiTest {
 				ErrorDto.class);
 
 		Assertions.assertThat(response).usingRecursiveComparison().isEqualTo(expectedResponse);
+	}
+	
+	@Test
+	void calculate_returnsBadRequest_whenAnOperatorIsString() throws Exception {
+		final MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post(ENDPOINT, OPERATION_ADD)
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).characterEncoding(ENCODING)
+				.content("{ \"operators\": [ \"vanessa\", \"rodriguez\" ] }");
+
+		final MvcResult result = mvc.perform(mockRequest)
+				.andExpect(status().isBadRequest())
+				.andReturn();
+
+		Assertions.assertThat(result.getResponse().getStatus()).isEqualTo(HttpServletResponse.SC_BAD_REQUEST);
 	}
 }

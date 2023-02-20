@@ -1,6 +1,5 @@
 package rodriguez.garcia.vanessa.calculator.controller;
 
-import java.math.BigDecimal;
 import java.text.MessageFormat;
 
 import javax.validation.Valid;
@@ -18,9 +17,6 @@ import rodriguez.garcia.vanessa.calculator.service.SimpleOperationsApiService;
 
 @RestController
 public class SimpleOperationsApiImpl implements SimpleOperationsApi {
-	private static final String OPERATION_ADD = "add";
-
-	private static final String OPERATION_DIFF = "diff";
 
 	private static final TracerImpl TRACER = new TracerImpl();
 
@@ -33,23 +29,10 @@ public class SimpleOperationsApiImpl implements SimpleOperationsApi {
 		TRACER.trace(MessageFormat.format("[START] calculate with operationCode: {0} and calculateRequestDto: {1}",
 				operationCode, calculateRequestDto));
 
-		if (!OPERATION_ADD.equals(operationCode) && !OPERATION_DIFF.equals(operationCode)) {
-			throw new UnsupportedOperationException(operationCode);
-		}
-
-		BigDecimal result = null;
-
-		if (OPERATION_ADD.equals(operationCode)) {
-			result = service.add(calculateRequestDto.getOperators());
-		}
-		if (OPERATION_DIFF.equals(operationCode)) {
-			result = service.diff(calculateRequestDto.getOperators());
-		}
-
 		final OperationResultDto response = new OperationResultDto()
 				.code(operationCode)
 				.operators(calculateRequestDto.getOperators())
-				.result(result);
+				.result(service.calculate(operationCode, calculateRequestDto.getOperators()));
 
 		TRACER.trace(MessageFormat.format("[END] calculate with response: {0}", response));
 

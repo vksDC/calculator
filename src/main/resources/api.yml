@@ -16,7 +16,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: [add, diff]
+            enum: [add, subtract]
       requestBody:
         content:
           application/json:
