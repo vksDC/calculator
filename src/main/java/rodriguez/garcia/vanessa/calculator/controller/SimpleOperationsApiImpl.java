@@ -4,7 +4,6 @@ import java.text.MessageFormat;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,15 +12,18 @@ import com.test.generated.api.dto.CalculateRequestDto;
 import com.test.generated.api.dto.OperationResultDto;
 
 import io.corp.calculator.TracerImpl;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import rodriguez.garcia.vanessa.calculator.service.SimpleOperationsApiService;
 
 @RestController
+@RequiredArgsConstructor
 public class SimpleOperationsApiImpl implements SimpleOperationsApi {
 
 	private static final TracerImpl TRACER = new TracerImpl();
 
-	@Autowired
-	private SimpleOperationsApiService service;
+	@NonNull
+	private final SimpleOperationsApiService service;
 
 	@Override
 	public ResponseEntity<OperationResultDto> calculate(final String operationCode,
